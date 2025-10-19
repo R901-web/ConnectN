@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConnectN_v2
 {
@@ -13,9 +8,9 @@ namespace ConnectN_v2
         static void Main(string[] args)
         {
             Console.WriteLine("Connect N \n");
-            State winner = State.Empty;
-            byte toWin = 0;
+            Random rand = new Random();
 
+            byte toWin = 0;
             //Create board
             byte rows = 0; //limit board size to 255x255
             byte cols = 0;
@@ -71,50 +66,98 @@ namespace ConnectN_v2
             Console.WriteLine($"The board is {board.numRows} rows tall and {board.numCols} columns wide");
             Console.WriteLine($"Get {GameState.toWin} to win \n"); //Use class values instead of local variables
 
-            //Game loop
-            byte column = 0;
-            State nowPlayer = State.X;
-            while (winner == State.Empty)
+            //Tournament loop
+            string again = null;
+            int[] wins = new int[3] { 0, 0, 0 }; //xWins, oWins, draws
+            State starter = State.X;
+            State nowPlayer;
+            while (again == "yes" || again == null)
             {
-                Console.WriteLine($"Player {nowPlayer}'s turn");
-                //Get column and check if valid move
-                Console.WriteLine($"Enter the column (1-{board.numCols})");
-                while (column < 1)
+                //Game loop -> 1 game only
+                State winner = State.Empty;
+                nowPlayer = starter;
+                while (winner == State.Empty)
+                {
+                    Console.WriteLine($"Player {nowPlayer}'s turn");
+                    //Get column and check if valid move
+                    Console.WriteLine($"Enter the column (1-{board.numCols})");
+                    byte column = 0;
+                    while (column < 1)
+                    {
+                        try
+                        {
+                            column = Convert.ToByte(Console.ReadLine());
+                            if (column == 0) { throw new OverflowException(); }
+                            if (column > board.numCols) { column = 0; throw new OverflowException(); }
+                            if (!board.ValidMove((byte)(column - 1))) { column = 0; throw new Exception("The column is already full"); }
+                        }
+                        catch (OverflowException) { Console.WriteLine($"The number you entered is not in range (1-{cols}) "); }
+                        catch (FormatException) { Console.WriteLine("Please enter an integer"); }
+                        catch (Exception e) { Console.WriteLine(e.Message); }
+                    }
+                    column -= 1; //arrays use 0-based indexing
+                    board[board.FindRow(column), column] = nowPlayer; //Set square         
+                    board.PrintBoard();
+                    Console.WriteLine();
+                    //Check if win
+                    winner = GameState.CheckWin(board);
+                    if (winner == State.Empty && GameState.AllFull(board)) { break; } //Draw
+
+                    //Switch player
+                    nowPlayer = (nowPlayer == State.X) ? State.O : State.X;
+                }
+                //Winner/Draw logic
+                if (winner == State.Empty) { Console.WriteLine("The game ended in a draw"); wins[2]++; }
+                else
+                {
+                    if (winner == State.X) { Console.ForegroundColor = ConsoleColor.Red; wins[0]++; }
+                    else if (winner == State.O) { Console.ForegroundColor = ConsoleColor.Blue; wins[1]++; }
+                    Console.WriteLine($"Player {winner} wins the game!");
+                    Console.ResetColor();
+                }
+                //Play again
+                again = null; //reset for loop
+                Console.WriteLine("Play again? (yes/no) ");
+                while (again == null)
                 {
                     try
                     {
-                        column = Convert.ToByte(Console.ReadLine());
-                        if (column == 0) { throw new OverflowException(); }
-                        if (column > board.numCols) { column = 0; throw new OverflowException(); }
-                        if (!board.ValidMove((byte)(column - 1))) { column = 0; throw new Exception("The column is already full"); }
+                        again = Console.ReadLine();
+                        if (again == null) { throw new FormatException(); }
+                        if (again != "yes" && again != "no") { again = null; throw new FormatException(); }
                     }
-                    catch (OverflowException) { Console.WriteLine($"The number you entered is not in range (1-{cols}) "); }
-                    catch (FormatException) { Console.WriteLine("Please enter an integer"); }
-                    catch (Exception e) { Console.WriteLine(e.Message); }
+                    catch (FormatException) { Console.WriteLine("Please enter yes or no "); }
+                    catch (Exception) { Console.WriteLine("An unexpected error occured. Please try again"); }
                 }
-                column -= 1; //arrays use 0-based indexing
-                board[board.FindRow(column), column] = nowPlayer; //Set square
-                //Set to 0 for while loop for next turn
-                column = 0;
-                board.PrintBoard();
-                Console.WriteLine("");
-                //Check if win
-                winner = GameState.CheckWin(board);
-                if (winner == State.Empty && GameState.AllFull(board)) { break; } //Draw
+                Console.WriteLine();
+                if (again == "yes") //Reset board for next game
+                {
+                    board.EmptyBoard();
+                    board.PrintBoard();
+                    Console.WriteLine();
+                    if (winner == State.Empty) { starter = (rand.Next(0, 2) == 0) ? State.X : State.O; } //random start
+                    else { starter = (winner == State.X) ? State.O : State.X; } //loser starts
+                }
+            }
+            //Add number of wins/draws/games played
+            Console.WriteLine("Statistics: ");
+            Console.WriteLine($"Wins by X: {wins[0]}");
+            Console.WriteLine($"Wins by O: {wins[1]}");
+            Console.WriteLine($"Draws: {wins[2]} ");
+            Console.WriteLine($"Total games played: {wins[0] + wins[1] + wins[2]} \n");
 
-                //Switch player
-                if (nowPlayer == State.X) { nowPlayer = State.O; }
-                else if (nowPlayer == State.O) { nowPlayer = State.X; }
-            }
-            //Winner/Draw logic
-            if (winner == State.Empty) { Console.WriteLine("The game ended in a draw"); }
-            else
+            if (wins[0] == wins[1]) { Console.WriteLine("The tournament ended in a draw"); }
+            else if (wins[0] > wins[1])
             {
-                if (winner == State.X) { Console.ForegroundColor = ConsoleColor.Red; }
-                else if (winner == State.O) { Console.ForegroundColor = ConsoleColor.Blue; }
-                Console.WriteLine($"Player {winner} wins!");
-                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Player X wins the tournament!");
             }
+            else if (wins[1] > wins[0])
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Player O wins the tournament!");
+            }
+            Console.ResetColor();
 
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConnectN_v2
 {
@@ -31,11 +27,14 @@ namespace ConnectN_v2
             numRows = rows;
             numCols = cols;
             board = new State[rows, cols];
+            EmptyBoard();
+        }
 
-            //Empty board
-            for (byte r = 0; r < rows; r++)
+        public void EmptyBoard()
+        {
+            for (byte r = 0; r < numRows; r++)
             {
-                for (byte c = 0; c < cols; c++)
+                for (byte c = 0; c < numCols; c++)
                 { board[r, c] = State.Empty; }
             }
         }
@@ -91,8 +90,7 @@ namespace ConnectN_v2
                         Console.Write(segString);
                         segLength = 0;
                         //print X or O
-                        if (s == State.X) { Console.ForegroundColor = ConsoleColor.Red; }
-                        else if (s == State.O) { Console.ForegroundColor = ConsoleColor.Blue; }
+                        Console.ForegroundColor = (s == State.X) ? ConsoleColor.Red : ConsoleColor.Blue;
                         Console.Write($" {s} ");
                         Console.ForegroundColor = defaultColor;
                         if (!isLast) { Console.Write("|"); }
