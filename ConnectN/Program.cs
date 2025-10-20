@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConnectN_v2
+namespace ConnectN
 {
     enum State { Empty, X, O }
     internal class Program

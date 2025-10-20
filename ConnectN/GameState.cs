@@ -1,4 +1,6 @@
-﻿namespace ConnectN_v2
+﻿using System;
+
+namespace ConnectN
 {
     internal static class GameState
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConnectN_v2
+namespace ConnectN
 {
     internal class Board
     {
