@@ -11,10 +11,10 @@ namespace ConnectN
             Random rand = new Random();
 
             byte toWin = 0;
-            //Create board
             byte rows = 0; //limit board size to 255x255
             byte cols = 0;
 
+            //Create board
             Console.WriteLine("Enter the dimensions of the board (rows, columns) ");
             while (rows < 1 || cols < 1)
             {
@@ -52,10 +52,10 @@ namespace ConnectN
                 catch (FormatException) { Console.WriteLine("Please enter an integer"); }
                 catch (Exception) { Console.WriteLine("An unexpected error occurred. Please try again"); }
             }
-            GameState.SetToWin(toWin);
+            GameState.ToWin = toWin;
 
             //Check classes and program values same
-            if (GameState.toWin != toWin) { Console.WriteLine("An unexpected error occurred. The game will now exit"); return; }
+            if (GameState.ToWin != toWin) { Console.WriteLine("An unexpected error occurred. The game will now exit"); return; }
             if (board.numRows != rows || board.numCols != cols)
             { Console.WriteLine("An unexpected error occurred. The game will now exit"); return; }
 
@@ -64,7 +64,7 @@ namespace ConnectN
             board.PrintBoard();
             Console.WriteLine("");
             Console.WriteLine($"The board is {board.numRows} rows tall and {board.numCols} columns wide");
-            Console.WriteLine($"Get {GameState.toWin} to win \n"); //Use class values instead of local variables
+            Console.WriteLine($"Get {GameState.ToWin} to win \n"); //Use class values instead of local variables
 
             //Tournament loop
             string again = null;
@@ -79,6 +79,7 @@ namespace ConnectN
                 while (winner == State.Empty)
                 {
                     Console.WriteLine($"Player {nowPlayer}'s turn");
+
                     //Get column and check if valid move
                     Console.WriteLine($"Enter the column (1-{board.numCols})");
                     byte column = 0;
@@ -99,6 +100,7 @@ namespace ConnectN
                     board[board.FindRow(column), column] = nowPlayer; //Set square         
                     board.PrintBoard();
                     Console.WriteLine();
+
                     //Check if win
                     winner = GameState.CheckWin(board);
                     if (winner == State.Empty && GameState.AllFull(board)) { break; } //Draw
@@ -106,6 +108,7 @@ namespace ConnectN
                     //Switch player
                     nowPlayer = (nowPlayer == State.X) ? State.O : State.X;
                 }
+
                 //Winner/Draw logic
                 if (winner == State.Empty) { Console.WriteLine("The game ended in a draw"); wins[2]++; }
                 else
@@ -115,6 +118,7 @@ namespace ConnectN
                     Console.WriteLine($"Player {winner} wins the game!");
                     Console.ResetColor();
                 }
+
                 //Play again
                 again = null; //reset for loop
                 Console.WriteLine("Play again? (yes/no) ");
@@ -139,7 +143,8 @@ namespace ConnectN
                     else { starter = (winner == State.X) ? State.O : State.X; } //loser starts
                 }
             }
-            //Add number of wins/draws/games played
+
+            //Announce statistics
             Console.WriteLine("Statistics: ");
             Console.WriteLine($"Wins by X: {wins[0]}");
             Console.WriteLine($"Wins by O: {wins[1]}");

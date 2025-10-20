@@ -16,10 +16,7 @@ namespace ConnectN
                 if (r < 0 || r >= numRows || c < 0 || c >= numCols) { return State.Empty; } //Out of bounds
                 else { return board[r, c]; }
             }
-            set
-            {
-                if (r >= 0 && r < numRows && c >= 0 && c < numCols) { board[r, c] = value; } //Only set if in bounds 
-            }
+            set { if (r >= 0 && r < numRows && c >= 0 && c < numCols) { board[r, c] = value; } } //Only set if in bounds 
         }
 
         public Board(byte rows, byte cols)

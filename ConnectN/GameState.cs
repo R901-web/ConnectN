@@ -4,17 +4,17 @@ namespace ConnectN
 {
     internal static class GameState
     {
-        public static byte toWin { get; private set; } = 0; //amount in row to win, is readonly
+        private static byte toWin;
 
-        public static void SetToWin(byte n)
+        public static byte ToWin
         {
-            if (toWin == 0) { toWin = n; } //Set only if not already set, also cannot set back to 0
+            get { return toWin; }
+            set { if (toWin == 0) { toWin = value; } } //Set only if not already set
         }
 
         public static State CheckWin(Board board)
         {
             State[] values = new State[toWin];
-
             //Check horizontal
             for (byte r = 0; r < board.numRows; r++)
             {
@@ -58,7 +58,6 @@ namespace ConnectN
                     }
                 }
             }
-
             return State.Empty; //If no winner
         }
 
