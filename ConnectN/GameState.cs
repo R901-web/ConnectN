@@ -21,7 +21,7 @@ namespace ConnectN
                 for (byte c = 0; c < board.numCols; c++) //Can out of bounds because indexer returns State.Empty
                 {
                     for (byte i = 0; i < toWin; i++)
-                    { values[i] = board[r, (byte)(c + i)]; } //Explicit cast bcs implicit when add
+                    { values[i] = board[new Position(r, c + i)]; } //Explicit cast bcs implicit when add
                     if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
                 }
             }
@@ -31,7 +31,7 @@ namespace ConnectN
                 for (byte c = 0; c < board.numCols; c++)
                 {
                     for (byte i = 0; i < toWin; i++)
-                    { values[i] = board[(byte)(r + i), c]; }
+                    { values[i] = board[new Position(r + i, c)]; }
                     if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
                 }
             }
@@ -43,7 +43,7 @@ namespace ConnectN
                     for (byte c = 0; c < board.numCols; c++)
                     {
                         for (byte i = 0; i < toWin; i++)
-                        { values[i] = board[(byte)(r + i), (byte)(c + i)]; }
+                        { values[i] = board[new Position(r + i, c + i)]; }
                         if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
                     }
                 }
@@ -53,7 +53,7 @@ namespace ConnectN
                     for (byte c = 0; c < board.numCols; c++)
                     {
                         for (byte i = 0; i < toWin; i++)
-                        { values[i] = board[(byte)(r - i), (byte)(c + i)]; }
+                        { values[i] = board[new Position(r - i , c + i)]; }
                         if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
                     }
                 }
@@ -66,7 +66,7 @@ namespace ConnectN
             for (byte r = 0; r < board.numRows; r++)
             {
                 for (byte c = 0; c < board.numCols; c++)
-                { if (board[r, c] == State.Empty) { return false; } }
+                { if (board[new Position(r,c)] == State.Empty) { return false; } }
             }
             return true; // No empty cells found, board is full
         }

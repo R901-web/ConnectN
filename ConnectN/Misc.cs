@@ -5,15 +5,21 @@ namespace ConnectN
     //Miscellaneous enums, delegates and simple classes/structs
     enum State { Empty, X, O }
 
-    internal struct Position
+    internal struct Position 
     {
-        public byte x { get; } //the column its in
-        public byte y { get; } //the row its in
+        public byte col { get; } //the column its in = c
+        public byte row { get; } //the row its in = r
 
-        public Position(byte x, byte y)
+        public Position(int row, int col)
         {
-            this.x = x;
-            this.y = y;
+            this.row = (byte)row;
+            this.col = (byte)col;
+        }
+
+        public Position(byte col, Board board)
+        {
+            this.col = col;
+            this.row = board.FindRow(col);
         }
     }
 }

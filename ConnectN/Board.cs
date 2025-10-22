@@ -9,21 +9,21 @@ namespace ConnectN
         public byte numCols { get; } //how fat
         State[,] board { get; } //the actual board
 
-        public State this[byte r, byte c]
+        public State this[Position p]
         {
-            get
+            get 
             {
-                if (r < 0 || r >= numRows || c < 0 || c >= numCols) { return State.Empty; } //Out of bounds
-                else { return board[r, c]; }
+                if (p.row >= numRows || p.col >= numCols) { return State.Empty; } //Is byte -> no need check if < 0
+                else { return board[p.row, p.col]; }
             }
-            set { if (r >= 0 && r < numRows && c >= 0 && c < numCols) { board[r, c] = value; } } //Only set if in bounds 
+            set { if (p.row < numRows && p.col < numCols) { board[p.row, p.col] = value; } }
         }
 
-        public Board(byte rows, byte cols)
+        public Board(Position p)
         {
-            numRows = rows;
-            numCols = cols;
-            board = new State[rows, cols];
+            numRows = p.row;
+            numCols = p.col;
+            board = new State[numRows, numCols];
             EmptyBoard();
         }
 
