@@ -2,7 +2,6 @@
 
 namespace ConnectN
 {
-    enum State { Empty, X, O }
     internal class Program
     {
         static void Main(string[] args)
