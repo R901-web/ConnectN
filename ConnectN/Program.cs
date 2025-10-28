@@ -162,7 +162,7 @@ namespace ConnectN
             }
             Console.ResetColor();
 
-            logger.LogEnd(wins);
+            logger.LogEnd(wins, numGames);
 
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();

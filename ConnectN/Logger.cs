@@ -69,14 +69,14 @@ namespace ConnectN
             { append($"Game   : {winner} wins after {numMoves} moves"); }
         }
 
-        public void LogEnd(int[] wins)
+        public void LogEnd(int[] wins, int numGames)
         {
             //Add statistics
             emptyLine("");
-            append("Logger : Statistics ");
             append($"Logger : Wins by X = {wins[0]}");
             append($"Logger : Wins by O = {wins[1]}");
             append($"Logger : Draws = {wins[2]}");
+            append($"Logger : Total games played = {numGames}");
             emptyLine("");
             append("Logger : Log ended ");
             clock.Stop();
