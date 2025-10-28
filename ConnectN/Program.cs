@@ -127,6 +127,7 @@ namespace ConnectN
                     try
                     {
                         again = Console.ReadLine();
+                        logger.LogInput(again);
                         if (again == null) { throw new FormatException(); }
                         if (again != "yes" && again != "no") { again = null; throw new FormatException(); }
                     }
