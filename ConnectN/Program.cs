@@ -6,7 +6,7 @@ namespace ConnectN
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Connect N v1.2.0\n"); //MAKE SURE TO UPDATE
+            Console.WriteLine("Connect N v1.2.1\n"); //MAKE SURE TO UPDATE
             Random rand = new Random();
             Logger logger = new Logger();
 
@@ -56,7 +56,7 @@ namespace ConnectN
 
             //Announce stuff to user
             Console.WriteLine("");
-            board.PrintBoard();
+            board.PrintBoard(new Position(255,255));
             Console.WriteLine("");
             Console.WriteLine($"The board is {board.numRows} rows tall and {board.numCols} columns wide");
             Console.WriteLine($"Get {GameState.ToWin} to win \n"); //Use class values instead of local variables
@@ -77,6 +77,7 @@ namespace ConnectN
                 logger.LogGameStart(numGames, starter);
                 while (winner == State.Empty)
                 {
+                    Position move;
                     numMoves++;
                     Console.WriteLine($"Player {nowPlayer}'s turn");
                     //Get column and check if valid move
@@ -99,9 +100,10 @@ namespace ConnectN
                         catch (Exception e) { Console.WriteLine("An unexpected error occured. Please try again"); logger.LogError(e); }
                     }
                     column -= 1; //arrays use 0-based indexing
-                    logger.LogMove(nowPlayer, new Position(column, board)); //Before setting square to prevent FindRow() bugs
-                    board[new Position(column, board)] = nowPlayer; //Set square
-                    board.PrintBoard();
+                    move = new Position(column, board);
+                    logger.LogMove(nowPlayer, move);
+                    board[move] = nowPlayer; //Set square 
+                    board.PrintBoard(move);
                     Console.WriteLine();
                     //Check if win
                     winner = GameState.CheckWin(board);
@@ -137,7 +139,7 @@ namespace ConnectN
                 Console.WriteLine();
                 if (again == "yes") //Reset board for next game
                 {
-                    board.EmptyBoard(); board.PrintBoard(); Console.WriteLine();
+                    board.EmptyBoard(); board.PrintBoard(new Position(255,255)); Console.WriteLine();
                     if (winner == State.Empty) { starter = (rand.Next(0, 2) == 0) ? State.X : State.O; } //random start
                     else { starter = (winner == State.X) ? State.O : State.X; } //loser starts
                 }

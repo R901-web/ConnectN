@@ -27,7 +27,7 @@ namespace ConnectN
             write = delegate (string s) { File.WriteAllText("log.txt", s); };
             emptyLine = delegate { File.AppendAllText("log.txt", "\n"); };
             //Add fancy header thing
-            write("==========[ ConnectN v1.2.0 ]========== ");
+            write("==========[ ConnectN v1.2.1 ]========== ");
             clock.Start();
             emptyLine("");
             append("Logger : Log initiated");

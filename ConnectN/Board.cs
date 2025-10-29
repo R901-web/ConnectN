@@ -38,7 +38,8 @@ namespace ConnectN
 
         //Group empty cells into segments, print segments all together
         //For X and O, print cells individually so divider is white
-        public void PrintBoard()
+        //Last piece placed is printed in a lighter colour
+        public void PrintBoard(Position move) //If move not in board, no change
         {
             //Prebuild ---+---+--- divider
             string divider = "";
@@ -86,8 +87,11 @@ namespace ConnectN
                         segString = BuildSegment(segLength, false);
                         Console.Write(segString);
                         segLength = 0;
-                        //print X or O
-                        Console.ForegroundColor = (s == State.X) ? ConsoleColor.Red : ConsoleColor.Blue;
+                        //Switch colour
+                        if (move.row == row && move.col == col) //Last move
+                        { Console.ForegroundColor = (s == State.X) ? ConsoleColor.Red : ConsoleColor.Blue ; } //Lighter colour
+                        else { Console.ForegroundColor = (s == State.X) ? ConsoleColor.DarkRed : ConsoleColor.DarkBlue; } //Normal cell
+                        //Print cell
                         Console.Write($" {s} ");
                         Console.ForegroundColor = defaultColor;
                         if (!isLast) { Console.Write("|"); }
