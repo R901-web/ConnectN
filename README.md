@@ -3,4 +3,3 @@ This is a console-based version of Connect 4 coded in C#. However, what stands o
 
 Planned Features: 
 1. Simple AI for one-player games
-2. Add a logger for each run
