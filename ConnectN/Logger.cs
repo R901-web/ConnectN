@@ -33,13 +33,13 @@ namespace ConnectN
 
         //For announcements/new sections
         public void Log(string s) { emptyLine(); append($"Logger : {s} "); }
-        public void Log(string[] s) 
-        { 
-            emptyLine(); 
+        public void Log(string[] s)
+        {
+            emptyLine();
             foreach (string line in s) { append($"Logger : {line} "); }
         }
 
-        public void LogInput(string s) { append($"Input  : User inputted '{s}' "); } 
+        public void LogInput(string s) { append($"Input  : User inputted '{s}' "); }
 
         public void LogError(Exception e) //exception is base class so can all
         {
@@ -53,10 +53,10 @@ namespace ConnectN
         { append($"Move   : {player} placed counter at {pos}"); }
 
         public void LogGameStart(int numGames, State starter)
-        { 
-            emptyLine(); 
-            append($"----------| Game {numGames} |----------"); 
-            append($"Game   : Player {starter} starts"); 
+        {
+            emptyLine();
+            append($"----------| Game {numGames} |----------");
+            append($"Game   : Player {starter} starts");
         }
 
         public void LogGameEnd(State winner, int numMoves, Position[] winPos) //Position[0] if draw
@@ -64,7 +64,7 @@ namespace ConnectN
             if (winner == State.Empty)
             { append($"Game   : Draw after {numMoves} moves"); }
             else
-            { 
+            {
                 append($"Game   : {winner} wins after {numMoves} moves");
                 string s = string.Join(", ", winPos);
                 append($"Game   : {GameState.ToWin} in a row at " + s);

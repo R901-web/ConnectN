@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ConnectN
+﻿namespace ConnectN
 {
     public static class GameState
     {
@@ -66,14 +64,14 @@ namespace ConnectN
             return (State.Empty, new Position[0]); //If no winner
         }
 
-        
+
 
         public static bool AllFull(Board board)
         {
             for (int r = 0; r < board.numRows; r++)
             {
                 for (int c = 0; c < board.numCols; c++)
-                { if (board[new Position(r,c)] == State.Empty) { return false; } }
+                { if (board[new Position(r, c)] == State.Empty) { return false; } }
             }
             return true; // No empty cells found, board is full
         }

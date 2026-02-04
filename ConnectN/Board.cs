@@ -12,7 +12,7 @@ namespace ConnectN
 
         public State this[Position p]
         {
-            get 
+            get
             {
                 if (p.row >= numRows || p.col >= numCols || p.row < 0 || p.col < 0) { return State.Empty; }
                 else { return board[p.row, p.col]; }
@@ -38,7 +38,7 @@ namespace ConnectN
             compact = board.compact;
             for (int r = 0; r < numRows; r++)
             {
-                for (int c = 0;  c < numCols; c++)
+                for (int c = 0; c < numCols; c++)
                 { this.board[r, c] = board[new Position(r, c)]; }
             }
         }
@@ -78,8 +78,8 @@ namespace ConnectN
                     if (compact) { segString += "\u00B7 "; }
                     else
                     {
-                        segString += "   "; 
-                        if (i < length - 1) { segString += "|"; } 
+                        segString += "   ";
+                        if (i < length - 1) { segString += "|"; }
                     }
                 }
                 if (!isLast && length > 0 && !compact) { segString += "|"; }
@@ -132,8 +132,8 @@ namespace ConnectN
                             else { Console.ForegroundColor = (s == State.X) ? ConsoleColor.DarkRed : ConsoleColor.DarkBlue; } //Non-winning position
                         }
 
-                            //Print cell
-                            Console.Write(compact ? $"{s} " : $" {s} ");
+                        //Print cell
+                        Console.Write(compact ? $"{s} " : $" {s} ");
                         Console.ForegroundColor = defaultColor;
                         if (!compact && !isLast) { Console.Write("|"); }
                     }

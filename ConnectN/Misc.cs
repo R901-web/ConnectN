@@ -9,7 +9,7 @@ namespace ConnectN
 
     public delegate sbyte Move(Board board);
 
-    public struct Position 
+    public struct Position
     {
         public sbyte col { get; } //the column its in = c -> x value
         public sbyte row { get; } //the row its in = r -> y value
@@ -38,7 +38,7 @@ namespace ConnectN
         }
 
         //0-based, higher col = more right (0 to numCols-1); higher row = more down (0 at top, numRows-1 at bottom) 
-        public override string ToString() { return $"[{col}, {row}]"; } 
+        public override string ToString() { return $"[{col}, {row}]"; }
     }
 
     public class FullColumnException : Exception

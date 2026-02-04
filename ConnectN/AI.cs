@@ -117,7 +117,7 @@ namespace ConnectN
             }
             float score = 0;
             foreach (KeyValuePair<Position, sbyte> entry in inRow) //Square the count to give higher weight to longer lines
-            { score += ((entry.Value) * (entry.Value))/(GameState.ToWin * GameState.ToWin); } //divide by GameState.ToWin to keep const across different board sizes
+            { score += ((entry.Value) * (entry.Value)) / (GameState.ToWin * GameState.ToWin); } //divide by GameState.ToWin to keep const across different board sizes
 
             return score;
         }
@@ -130,7 +130,7 @@ namespace ConnectN
             //Find all n-1 in a row
             int forkCount = 0;
             List<Position> newPositions = InitScoring(localBoard).positions;
-            foreach(Position newPos in newPositions)
+            foreach (Position newPos in newPositions)
             {
                 if (ScoreWinning(localBoard, newPos) == float.PositiveInfinity)
                 { forkCount++; }

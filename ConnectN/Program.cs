@@ -6,7 +6,7 @@ namespace ConnectN
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Connect N v1.2.1\n"); 
+            Console.WriteLine("Connect N v1.2.1\n");
             Random rand = new Random();
             Logger logger = new Logger();
 
@@ -16,7 +16,7 @@ namespace ConnectN
             logger.Log("Board Dimensions");
             while (size == null)
             {
-                try 
+                try
                 {
                     string input = Console.ReadLine();
                     logger.LogInput(input);
@@ -32,7 +32,7 @@ namespace ConnectN
                 catch (Exception e) { Console.Write("An unexpected error occurred. Please try again: "); logger.LogError(e); }
             }
             Console.WriteLine();
-            Board board = new Board(size ?? new Position(6,7)); //defaults to Connect 4 board if somehow get past error handling
+            Board board = new Board(size ?? new Position(6, 7)); //defaults to Connect 4 board if somehow get past error handling
 
             //Set number to connect
             sbyte? toWin = null;
@@ -48,7 +48,7 @@ namespace ConnectN
                     if (toWin < 2) { throw new OverflowException(); } //3x9 board can have 9 in a row 
                     if (toWin > board.numCols && toWin > board.numRows) { throw new OverflowException(); }
                 }
-                catch (OverflowException e) 
+                catch (OverflowException e)
                 { Console.Write($"Enter a number in range (2-{Math.Max(board.numRows, board.numCols)}): "); logger.LogError(e); toWin = null; }
                 catch (FormatException e) { Console.Write("Enter an integer: "); logger.LogError(e); }
                 catch (Exception e) { Console.Write("An unexpected error occurred. Please try again: "); logger.LogError(e); }
@@ -130,7 +130,7 @@ namespace ConnectN
             Move xMove = (aiX.level == AILevel.off) ? humanMove : aiX.getMove();
             Move oMove = (aiO.level == AILevel.off) ? humanMove : aiO.getMove();
 
-            while (again == true || again == null) 
+            while (again == true || again == null)
             {
                 //Game loop -> 1 game only
                 numGames++;
@@ -151,7 +151,7 @@ namespace ConnectN
                     sbyte c = chooseMove(board);
                     if (isAI) { Console.WriteLine(c + 1); }
                     Console.WriteLine();
-                    Position move = new Position(c, board); 
+                    Position move = new Position(c, board);
                     logger.LogMove(nowPlayer, move);
                     board[move] = nowPlayer; //Set square 
 
