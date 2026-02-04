@@ -2,70 +2,77 @@
 
 namespace ConnectN
 {
-    internal static class GameState
+    public static class GameState
     {
-        private static byte toWin;
+        private static sbyte toWin = 0;
 
-        public static byte ToWin
+        public static sbyte ToWin
         {
             get { return toWin; }
             set { if (toWin == 0) { toWin = value; } } //Set only if not already set
         }
-
-        public static State CheckWin(Board board)
+        //higher col, go down; higher row, go right
+        public static (State winner, Position[] positions) CheckWin(Board board) //Can leave out numToCheck
         {
             State[] values = new State[toWin];
+            Position[] positions = new Position[toWin];
             //Check horizontal
-            for (byte r = 0; r < board.numRows; r++)
+            for (int r = 0; r < board.numRows; r++)
             {
-                for (byte c = 0; c < board.numCols; c++) //Can out of bounds because indexer returns State.Empty
+                for (int c = 0; c < board.numCols; c++) //Can out of bounds because indexer returns State.Empty
                 {
-                    for (byte i = 0; i < toWin; i++)
-                    { values[i] = board[new Position(r, c + i)]; } //Explicit cast bcs implicit when add
-                    if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
+                    Position currentCell = new Position(r, c);
+                    for (int i = 0; i < toWin; i++)
+                    { positions[i] = currentCell + i * Position.right; values[i] = board[positions[i]]; }
+                    if (AllEqual(values) && NoEmpty(values)) { return (values[0], positions); }
                 }
             }
             //Check vertical
-            for (byte r = 0; r < board.numRows; r++)
+            for (int r = 0; r < board.numRows; r++)
             {
-                for (byte c = 0; c < board.numCols; c++)
+                for (int c = 0; c < board.numCols; c++)
                 {
-                    for (byte i = 0; i < toWin; i++)
-                    { values[i] = board[new Position(r + i, c)]; }
-                    if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
+                    Position currentCell = new Position(r, c);
+                    for (int i = 0; i < toWin; i++)
+                    { positions[i] = currentCell + i * Position.down; values[i] = board[positions[i]]; }
+                    if (AllEqual(values) && NoEmpty(values)) { return (values[0], positions); }
                 }
             }
             if (toWin <= board.numRows && toWin <= board.numCols) //for optimization
             {
                 //Check \ diagonal
-                for (byte r = 0; r < board.numRows; r++)
+                for (int r = 0; r < board.numRows; r++)
                 {
-                    for (byte c = 0; c < board.numCols; c++)
+                    for (int c = 0; c < board.numCols; c++)
                     {
-                        for (byte i = 0; i < toWin; i++)
-                        { values[i] = board[new Position(r + i, c + i)]; }
-                        if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
+                        Position currentCell = new Position(r, c);
+                        for (int i = 0; i < toWin; i++)
+                        { positions[i] = currentCell + i * (Position.right + Position.down); values[i] = board[positions[i]]; }
+                        if (AllEqual(values) && NoEmpty(values)) { return (values[0], positions); }
                     }
                 }
                 //Check / diagonal
-                for (byte r = 0; r < board.numRows; r++)
+                for (int r = 0; r < board.numRows; r++)
                 {
-                    for (byte c = 0; c < board.numCols; c++)
+                    for (int c = 0; c < board.numCols; c++)
                     {
-                        for (byte i = 0; i < toWin; i++)
-                        { values[i] = board[new Position(r - i , c + i)]; }
-                        if (AllEqual(values) && NoEmpty(values)) { return values[0]; }
+                        Position currentCell = new Position(r, c);
+                        for (int i = 0; i < toWin; i++)
+                        { positions[i] = currentCell + i * (Position.right + Position.up); values[i] = board[positions[i]]; }
+                        if (AllEqual(values) && NoEmpty(values)) { return (values[0], positions); }
                     }
                 }
             }
-            return State.Empty; //If no winner
+            return (State.Empty, new Position[0]); //If no winner
         }
+
+        
 
         public static bool AllFull(Board board)
         {
-            for (byte r = 0; r < board.numRows; r++)
+            for (int r = 0; r < board.numRows; r++)
             {
-                for (byte c = 0; c < board.numCols; c++)
+                for (int c = 0; c < board.numCols; c++)
                 { if (board[new Position(r,c)] == State.Empty) { return false; } }
             }
             return true; // No empty cells found, board is full

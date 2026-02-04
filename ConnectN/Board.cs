@@ -2,21 +2,22 @@
 
 namespace ConnectN
 {
-    internal class Board
+    public class Board
     {
-        //Limit board size to 255x255
-        public byte numRows { get; } //how tall
-        public byte numCols { get; } //how fat
-        State[,] board { get; } //the actual board
+        //Limit board size to 127x127
+        public sbyte numRows { get; } //how tall
+        public sbyte numCols { get; } //how fat
+        private State[,] board { get; } //the actual board
+        public bool compact { get; set; } //the print style
 
         public State this[Position p]
         {
             get 
             {
-                if (p.row >= numRows || p.col >= numCols) { return State.Empty; } //Is byte -> no need check if < 0
+                if (p.row >= numRows || p.col >= numCols || p.row < 0 || p.col < 0) { return State.Empty; }
                 else { return board[p.row, p.col]; }
             }
-            set { if (p.row < numRows && p.col < numCols) { board[p.row, p.col] = value; } }
+            set { if (p.row < numRows && p.col < numCols && p.row >= 0 && p.col >= 0) { board[p.row, p.col] = value; } }
         }
 
         public Board(Position p)
@@ -24,49 +25,73 @@ namespace ConnectN
             numRows = p.row;
             numCols = p.col;
             board = new State[numRows, numCols];
-            EmptyBoard();
+            if (numRows > 15 || numCols > 20) { compact = true; } //Large board -> compact print
+            else { compact = false; }
+        }
+
+        //Clones the board -> create new instance to test moves on
+        public Board(Board board)
+        {
+            numRows = board.numRows;
+            numCols = board.numCols;
+            this.board = new State[numRows, numCols];
+            compact = board.compact;
+            for (int r = 0; r < numRows; r++)
+            {
+                for (int c = 0;  c < numCols; c++)
+                { this.board[r, c] = board[new Position(r, c)]; }
+            }
         }
 
         public void EmptyBoard()
         {
-            for (byte r = 0; r < numRows; r++)
+            for (int r = 0; r < numRows; r++)
             {
-                for (byte c = 0; c < numCols; c++)
+                for (int c = 0; c < numCols; c++)
                 { board[r, c] = State.Empty; }
             }
         }
 
-        //Group empty cells into segments, print segments all together
-        //For X and O, print cells individually so divider is white
-        //Last piece placed is printed in a lighter colour
-        public void PrintBoard(Position move) //If move not in board, no change
+        //Group empty cells together and print together
+        //Print X or O individually with colour
+        //Print last move in different colour for clarity
+        //When game won, highlight winning positions
+        //Normal mode: | dividers and ---+---+--- dividers
+        //Compact mode: no dividers, just spaces -> perfomance benefit too
+        public void printBoard(Position move, Position[] winPos) //Combine normal board and compact board
         {
-            //Prebuild ---+---+--- divider
             string divider = "";
-            for (int col = 0; col < numCols; col++)
+            if (!compact) //Prebuild divider for normal board
             {
-                divider += "---";
-                if (col < numCols - 1) { divider += "+"; }
+                for (int col = 0; col < numCols; col++)
+                {
+                    divider += "---";
+                    if (col < numCols - 1) { divider += "+"; }
+                }
             }
-            //Create cell builder local function
-            string BuildSegment(byte length, bool isLast)
+            //Segment builder
+            string BuildSegment(sbyte length, bool isLast)
             {
                 string segString = "";
                 for (int i = 0; i < length; i++)
                 {
-                    segString += "   ";
-                    if (i < length - 1) { segString += "|"; }
+                    if (compact) { segString += "\u00B7 "; }
+                    else
+                    {
+                        segString += "   "; 
+                        if (i < length - 1) { segString += "|"; } 
+                    }
                 }
-                if (!isLast && length > 0) { segString += "|"; } //length > 0 to avoid || when 2 consec. coloured
+                if (!isLast && length > 0 && !compact) { segString += "|"; }
                 return segString;
             }
+
             ConsoleColor defaultColor = Console.ForegroundColor;
-            //Each row
-            for (byte row = 0; row < numRows; row++) //indexer uses byte
+            for (int row = 0; row < numRows; row++) //indexer uses sbyte
             {
-                byte segLength = 0; //number in a row
+                sbyte segLength = 0; //number that are same color in a row
                 string segString;
-                for (byte col = 0; col < numCols; col++)
+                for (int col = 0; col < numCols; col++)
                 {
                     State s = board[row, col];
                     bool isLast = (col == numCols - 1);
@@ -80,7 +105,6 @@ namespace ConnectN
                             segLength = 0;
                         }
                     }
-                    //Not empty cell
                     else
                     {
                         //build and print segment
@@ -88,22 +112,39 @@ namespace ConnectN
                         Console.Write(segString);
                         segLength = 0;
                         //Switch colour
-                        if (move.row == row && move.col == col) //Last move
-                        { Console.ForegroundColor = (s == State.X) ? ConsoleColor.Red : ConsoleColor.Blue ; } //Lighter colour
-                        else { Console.ForegroundColor = (s == State.X) ? ConsoleColor.DarkRed : ConsoleColor.DarkBlue; } //Normal cell
-                        //Print cell
-                        Console.Write($" {s} ");
+                        if (GameState.CheckWin(this).winner == State.Empty) //game not won -> normal colour choosing
+                        {
+                            if (move.row == row && move.col == col)
+                            //{ Console.ForegroundColor = (s == State.X) ? ConsoleColor.DarkMagenta : ConsoleColor.Cyan; } //Highlight last move
+                            { Console.ForegroundColor = ConsoleColor.Green; }
+                            else { Console.ForegroundColor = (s == State.X) ? ConsoleColor.Red : ConsoleColor.Blue; } //Normal cell
+                        }
+                        else //game won -> highlight winning positions
+                        {
+                            //Check if in winPos
+                            bool isWinPos = false;
+                            for (int i = 0; i < winPos.Length; i++)
+                            {
+                                if (winPos[i].row == row && winPos[i].col == col)
+                                { isWinPos = true; break; }
+                            }
+                            if (isWinPos) { Console.ForegroundColor = ConsoleColor.Green; } //Highlight winning position
+                            else { Console.ForegroundColor = (s == State.X) ? ConsoleColor.DarkRed : ConsoleColor.DarkBlue; } //Non-winning position
+                        }
+
+                            //Print cell
+                            Console.Write(compact ? $"{s} " : $" {s} ");
                         Console.ForegroundColor = defaultColor;
-                        if (!isLast) { Console.Write("|"); }
+                        if (!compact && !isLast) { Console.Write("|"); }
                     }
                 }
-                Console.WriteLine(); //end row of  X |   | O |   | X | O 
-                if (row < numRows - 1) { Console.WriteLine(divider); } //new row for the cells
+                Console.WriteLine(); //end row
+                if (!compact && row < numRows - 1) { Console.WriteLine(divider); } //new row for the cells
             }
             Console.ForegroundColor = defaultColor;
         }
 
-        public bool ValidMove(byte column)
+        public bool ValidMove(sbyte column)
         {
             if (column >= numCols) { return false; } //Out of bounds
             for (int r = numRows - 1; r >= 0; r--) // Count from bottom to top, include row 0
@@ -114,15 +155,15 @@ namespace ConnectN
             return false; // No empty space found
         }
 
-        public byte FindRow(byte column) //Find the lowest empty row in a column
+        public sbyte FindRow(sbyte column) //Find the lowest empty row in a column
         {
-            if (column >= numCols) { return 255; } //Out of bounds
+            if (column >= numCols) { return 127; } //Out of bounds
             for (int r = numRows - 1; r >= 0; r--) // Count from bottom to top, include row 0
             {
                 if (board[r, column] == State.Empty)
-                { return (byte)r; } // Found empty space 
+                { return (sbyte)r; } // Found empty space 
             }
-            return 255; // No empty space found
+            return 127; // No empty space found
         }
     }
 }

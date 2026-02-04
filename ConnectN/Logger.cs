@@ -4,12 +4,9 @@ using System.IO;
 
 namespace ConnectN
 {
-    internal class Logger
+    public class Logger
     {
         Stopwatch clock = new Stopwatch();
-        Log append;
-        Log write;
-        Log emptyLine;
 
         private string GetTime()
         {
@@ -20,24 +17,25 @@ namespace ConnectN
             return timeString;
         }
 
+        private void append(string s) { File.AppendAllText("ConnectN-Log.txt", $"\n{GetTime() + s}"); }
+        private void write(string s) { File.WriteAllText("ConnectN-Log.txt", s); }
+        private void emptyLine() { File.AppendAllText("ConnectN-Log.txt", "\n"); }
+
+
         //6 chars before ' : '
         public Logger()
         {
-            append = delegate (string s) { File.AppendAllText("log.txt", $"\n{ GetTime() + s }"); };
-            write = delegate (string s) { File.WriteAllText("log.txt", s); };
-            emptyLine = delegate { File.AppendAllText("log.txt", "\n"); };
-            //Add fancy header thing
             write("==========[ ConnectN v1.2.1 ]========== ");
             clock.Start();
-            emptyLine("");
+            emptyLine();
             append("Logger : Log initiated");
         }
 
         //For announcements/new sections
-        public void Log(string s) { emptyLine(""); append($"Logger : {s} "); }
+        public void Log(string s) { emptyLine(); append($"Logger : {s} "); }
         public void Log(string[] s) 
         { 
-            emptyLine(""); 
+            emptyLine(); 
             foreach (string line in s) { append($"Logger : {line} "); }
         }
 
@@ -45,39 +43,43 @@ namespace ConnectN
 
         public void LogError(Exception e) //exception is base class so can all
         {
-            if (e is OverflowException) { append($"Error  : Input not in range"); }
-            else if (e is FormatException) { append($"Error  : Input in wrong format"); }
-            else if (e is FullColumnException) { append($"Error  : Input column is full"); }
-            else { append($"Error  : An unexpected error occured"); }
+            if (e is OverflowException) { append("Error  : Input not in range"); }
+            else if (e is FormatException) { append("Error  : Input in wrong format"); }
+            else if (e is FullColumnException) { append("Error  : Input column is full"); }
+            else { append("Error  : An unexpected error occured"); }
         }
 
         public void LogMove(State player, Position pos)
-        { append($"Move   : {player} placed counter at [{pos.col}, {pos.row}]"); }
+        { append($"Move   : {player} placed counter at {pos}"); }
 
         public void LogGameStart(int numGames, State starter)
         { 
-            emptyLine(""); 
+            emptyLine(); 
             append($"----------| Game {numGames} |----------"); 
             append($"Game   : Player {starter} starts"); 
         }
 
-        public void LogGameEnd(State winner, int numMoves)
+        public void LogGameEnd(State winner, int numMoves, Position[] winPos) //Position[0] if draw
         {
             if (winner == State.Empty)
             { append($"Game   : Draw after {numMoves} moves"); }
             else
-            { append($"Game   : {winner} wins after {numMoves} moves"); }
+            { 
+                append($"Game   : {winner} wins after {numMoves} moves");
+                string s = string.Join(", ", winPos);
+                append($"Game   : {GameState.ToWin} in a row at " + s);
+            }
         }
 
         public void LogEnd(int[] wins, int numGames)
         {
             //Add statistics
-            emptyLine("");
+            emptyLine();
             append($"Logger : Wins by X = {wins[0]}");
             append($"Logger : Wins by O = {wins[1]}");
             append($"Logger : Draws = {wins[2]}");
             append($"Logger : Total games played = {numGames}");
-            emptyLine("");
+            emptyLine();
             append("Logger : Log ended ");
             clock.Stop();
         }
