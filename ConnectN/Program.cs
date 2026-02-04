@@ -49,7 +49,7 @@ namespace ConnectN
                     if (toWin > board.numCols && toWin > board.numRows) { throw new OverflowException(); }
                 }
                 catch (OverflowException e) 
-                { Console.Write($"Enter a number in range (2-{Math.Max(board.numRows, board.numCols)}): "); logger.LogError(e); toWin = 0; }
+                { Console.Write($"Enter a number in range (2-{Math.Max(board.numRows, board.numCols)}): "); logger.LogError(e); toWin = null; }
                 catch (FormatException e) { Console.Write("Enter an integer: "); logger.LogError(e); }
                 catch (Exception e) { Console.Write("An unexpected error occurred. Please try again: "); logger.LogError(e); }
             }
@@ -71,7 +71,7 @@ namespace ConnectN
                         string input = Console.ReadLine();
                         logger.LogInput(input);
                         sbyte levelNum = Convert.ToSByte(input);
-                        if (levelNum > 5) { throw new OverflowException(); }
+                        if (levelNum > 5 || levelNum < 0) { throw new OverflowException(); }
                         level = (AILevel)levelNum;
                     }
                     catch (OverflowException e) { Console.Write("Enter a number in range (0-5): "); logger.LogError(e); }
