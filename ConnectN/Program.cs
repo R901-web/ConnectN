@@ -6,7 +6,7 @@ namespace ConnectN
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Connect N v1.2.1\n");
+            Console.WriteLine("Connect N\n");
             Random rand = new Random();
             Logger logger = new Logger();
 
@@ -60,7 +60,7 @@ namespace ConnectN
             AI aiX = null; AI aiO = null;
             for (int i = 0; i < 2; i++)
             {
-                AILevel? level = null;
+                AI.Level? level = null;
                 State player = (i == 0) ? State.X : State.O;
                 Console.Write($"Enter the AI level for {player} (0 for off, otherwise 1-5): ");
                 logger.Log($"AI Level for {player}");
@@ -72,15 +72,15 @@ namespace ConnectN
                         logger.LogInput(input);
                         sbyte levelNum = Convert.ToSByte(input);
                         if (levelNum > 5 || levelNum < 0) { throw new OverflowException(); }
-                        level = (AILevel)levelNum;
+                        level = (AI.Level)levelNum;
                     }
                     catch (OverflowException e) { Console.Write("Enter a number in range (0-5): "); logger.LogError(e); }
                     catch (FormatException e) { Console.Write("Enter an integer: "); logger.LogError(e); }
                     catch (Exception e) { Console.Write("An unexpected error occurred. Please try again: "); logger.LogError(e); }
                 }
                 Console.WriteLine();
-                if (player == State.X) { aiX = new AI(level ?? AILevel.off, board, player); } //defaults to off -> 2 player
-                else { aiO = new AI(level ?? AILevel.off, board, player); }
+                if (player == State.X) { aiX = new AI(level ?? AI.Level.off, board, player); } //defaults to off -> 2 player
+                else { aiO = new AI(level ?? AI.Level.off, board, player); }
             }
 
             //Announce stuff to user
@@ -127,8 +127,8 @@ namespace ConnectN
                 return (sbyte)(column - 1); //convert to 0-based
             };
 
-            Move xMove = (aiX.level == AILevel.off) ? humanMove : aiX.getMove();
-            Move oMove = (aiO.level == AILevel.off) ? humanMove : aiO.getMove();
+            Move xMove = (aiX.level == AI.Level.off) ? humanMove : aiX.getMove();
+            Move oMove = (aiO.level == AI.Level.off) ? humanMove : aiO.getMove();
 
             while (again == true || again == null)
             {
@@ -142,7 +142,7 @@ namespace ConnectN
                 while (winner == State.Empty)
                 {
                     numMoves++;
-                    bool isAI = (nowPlayer == State.X) ? (aiX.level != AILevel.off) : (aiO.level != AILevel.off);
+                    bool isAI = (nowPlayer == State.X) ? (aiX.level != AI.Level.off) : (aiO.level != AI.Level.off);
 
                     //Get move and place counter
                     Console.WriteLine($"Player {nowPlayer}'s turn");

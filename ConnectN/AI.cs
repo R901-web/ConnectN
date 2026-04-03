@@ -5,20 +5,22 @@ namespace ConnectN
 {
     public class AI
     {
+        public enum Level { off, rand, complete, extend, central, minimax }
+
         Random rand = new Random();
         Position boardSize;
         State player;
         sbyte toWin;
 
 
-        public AILevel level { get; }
+        public Level level { get; }
         //rand: random moves, only makes sure columns are empty and places inside board
         //complete: Blocks opponent's n-1 in a row, completes own n-1 in a row, otherwise random, check past gaps
         //extend: blocks/extends shorter lines + forks
         //central: Preference for central moves, does 2 depth for complete
         //minimax: Minimax 2-depth search
 
-        public AI(AILevel level, Board board, State player)
+        public AI(Level level, Board board, State player)
         {
             this.level = level;
             toWin = GameState.ToWin;
@@ -28,11 +30,11 @@ namespace ConnectN
 
         public Move getMove()
         {
-            if (level == AILevel.rand) { return randMove; }
-            else if (level == AILevel.complete) { return completeMove; }
-            else if (level == AILevel.extend) { return extendMove; }
-            else if (level == AILevel.central) { return centralMove; }
-            else if (level == AILevel.minimax) { return minimaxMove; }
+            if (level == Level.rand) { return randMove; }
+            else if (level == Level.complete) { return completeMove; }
+            else if (level == Level.extend) { return extendMove; }
+            else if (level == Level.central) { return centralMove; }
+            else if (level == Level.minimax) { return minimaxMove; }
             else { return delegate { return 0; }; } //anonymous methods :)
         }
 
@@ -159,6 +161,8 @@ namespace ConnectN
             return 0f;
         }
 
+        //have infinity checks to increase performance + make sure no NaN
+        //if have NaN -> break findBest -> do rand.Next(0,0) -> error
         private float ScoreMinimax(Board board, Position pos)
         {
             float ScoreAll(Board b, Position p)
@@ -179,6 +183,7 @@ namespace ConnectN
             localBoard[pos] = player; //make move
             float score = 0f;
             score += ScoreAll(localBoard, pos);
+            if (score == float.PositiveInfinity) { return score; } //winning move, no need to check further
 
             List<Position> newPositions = InitScoring(localBoard).positions;
             foreach (Position newPos in newPositions)
@@ -186,6 +191,7 @@ namespace ConnectN
                 Board opponentBoard = new Board(localBoard);
                 opponentBoard[newPos] = opp; //opponent makes move
                 score -= ScoreAll(opponentBoard, newPos) * 0.2f; //opp score 0.2 weightage bcs subtracted multiple times
+                if (score == float.NegativeInfinity) { return score; } //opponent has winning move, no need to check further
             }
 
             return score;

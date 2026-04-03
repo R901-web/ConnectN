@@ -5,8 +5,6 @@ namespace ConnectN
     //Miscellaneous enums, delegates and simple classes/structs
     public enum State { Empty, X, O }
 
-    public enum AILevel { off, rand, complete, extend, central, minimax }
-
     public delegate sbyte Move(Board board);
 
     public struct Position
