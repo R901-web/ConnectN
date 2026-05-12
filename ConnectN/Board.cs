@@ -133,9 +133,10 @@ namespace ConnectN
                         }
 
                         //Print cell
-                        Console.Write(compact ? $"{s} " : $" {s} ");
+                        Console.Write(compact ? $"{s}" : $" {s} ");
                         Console.ForegroundColor = defaultColor;
-                        if (!compact && !isLast) { Console.Write("|"); }
+                        //if (!compact && !isLast) { Console.Write("|"); }
+                        if (!isLast) { Console.Write(compact ? " " : "|"); }
                     }
                 }
                 Console.WriteLine(); //end row

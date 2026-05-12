@@ -56,7 +56,7 @@ namespace ConnectN
         {
             emptyLine();
             append($"----------| Game {numGames} |----------");
-            append($"Game   : Player {starter} starts");
+            append($"Game   : {starter} starts");
         }
 
         public void LogGameEnd(State winner, int numMoves, Position[] winPos) //Position[0] if draw
@@ -67,7 +67,7 @@ namespace ConnectN
             {
                 append($"Game   : {winner} wins after {numMoves} moves");
                 string s = string.Join(", ", winPos);
-                append($"Game   : {GameState.ToWin} in a row at " + s);
+                append($"Game   : {GameState.ToWin} in a row at {s}");
             }
         }
 
