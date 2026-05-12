@@ -79,6 +79,9 @@ namespace ConnectN
             append($"Logger : Wins by O = {wins[1]}");
             append($"Logger : Draws = {wins[2]}");
             append($"Logger : Total games played = {numGames}");
+            if (wins[0] > wins[1]) { append("Logger : X won the tournament"); }
+            else if (wins[1] > wins[0]) { append("Logger : O won the tournament"); }
+            else { append("Logger : Tournament ended in a draw"); }
             emptyLine();
             append("Logger : Log ended ");
             clock.Stop();
